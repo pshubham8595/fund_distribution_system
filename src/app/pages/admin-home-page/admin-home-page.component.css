@@ -1,0 +1,73 @@
+/* Reset default styles */
+body, ul {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Style the header and logo */
+  header {
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .logo h1 {
+    font-family: 'Arial Black', sans-serif;
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  /* Style the navigation links */
+  .nav-links {
+    list-style: none;
+    display: flex;
+  }
+  
+  .nav-links li {
+    margin-right: 20px;
+  }
+  
+  .nav-links li a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .nav-links li a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Add specific styles for inactive links */
+    .nav-links li a.inactive {
+        color: #777; /* Change the color to gray */
+        pointer-events: none; /* Disable pointer events */
+    }
+
+    .nav-links li a.active {
+        color: #ff9800; /* Change the color to indicate it's active */
+        font-weight: bold; /* Make the text bold */
+      }
+
+      .container {
+        display: flex;
+        padding: 30px;
+      }
+      
+      .left-section {
+        width: 400px;
+        background-color: #f0f0f0;
+        padding: 20px;
+      }
+      
+      .right-section {
+        flex-grow: 1;
+        /* background-color: #e0e0e0; */
+        padding: 10px;
+        margin-left: 10px; /* Spacing between sections */
+        margin-right: 10px; /* Spacing between sections */
+
+      }
+      

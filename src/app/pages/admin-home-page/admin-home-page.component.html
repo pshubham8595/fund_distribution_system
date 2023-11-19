@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Navbar Example</title>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h1>Fund Distribution System</h1>
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#"  class="inactive">Approve Applicant</a></li>
+        <li><a href="#" class="active">Add Scheme</a></li>
+        <li><a [routerLink]="['/loginPage']">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="left-section">
+      <app-scheme-form></app-scheme-form>
+    </div>
+    <div class="right-section">
+      <app-scheme-list></app-scheme-list>
+    </div>
+  </div>
+
+</body>
+</html>

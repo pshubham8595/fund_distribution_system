@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Form</title>
+</head>
+<body>
+  <div class="wrapper">
+    <form action="#">
+      <h2>Login</h2>
+        <div class="input-field">
+        <input type="text" [(ngModel)]="email" name="email">
+        <label>Enter your email</label>
+      </div>
+      <div class="input-field">
+        <input type="password" [(ngModel)]="password" name="password">
+        <label>Enter your password</label>
+      </div>
+
+      <button type="submit" (click)="login()">Log In</button>
+    </form>
+  </div>
+</body>
+</html>
