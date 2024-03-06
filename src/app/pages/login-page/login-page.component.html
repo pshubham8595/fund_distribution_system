@@ -9,15 +9,26 @@
   <div class="wrapper">
     <form action="#">
       <h2>Login</h2>
-        <div class="input-field">
+
+      <div class="select-field">
+        <select [(ngModel)]="selectedRole" name="role">
+          <option value="admin">Admin (Central Gov Officer)</option>
+          <option value="state">State Gov Officer</option>
+          <option value="district">District Officer</option>
+          <option value="bank">Bank Manager</option>
+        </select>
+      </div>
+
+      <div class="input-field">
         <input type="text" [(ngModel)]="email" name="email">
         <label>Enter your email</label>
       </div>
+      
       <div class="input-field">
         <input type="password" [(ngModel)]="password" name="password">
         <label>Enter your password</label>
       </div>
-
+     
       <button type="submit" (click)="login()">Log In</button>
     </form>
   </div>

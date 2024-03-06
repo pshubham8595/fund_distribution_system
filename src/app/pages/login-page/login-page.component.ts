@@ -13,7 +13,7 @@ export class LoginPageComponent {
   }
   email:string = "";
   password:string = "";
-
+  selectedRole:string = "admin";
 
   async login() {
     console.log("E:"+this.email)
