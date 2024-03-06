@@ -43,6 +43,12 @@ export class FirebaseConfigService {
     applicantType;
 
     return sha256(inputString).toString();
+  }
+  
+  computeOperationHash(
+    inputString:string,
+    ){
+    return sha256(inputString).toString();
   } 
 
   getMasterBlockChainData():Observable<any> {
@@ -116,6 +122,57 @@ export class FirebaseConfigService {
         })
       }
 
+
+
+  async approveByAdmin(userEmail:string,applicationId:string,applicationUpdateMap:any,operationUpdateMap:any):Promise<boolean>{
+      return new Promise(async (resolve)=>{
+        let currentOperationLogsCount = -1;
+        await this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).update(applicationUpdateMap).then(async val=>{
+          console.log("Updated Application Data");
+          const unsubscribe$ = new Subject<void>();
+          this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).collection("operationLog").get().pipe(
+            takeUntil(unsubscribe$)
+          ) .subscribe(
+            async operationLogs=>{
+              console.log("Current OperationsLog length:"+operationLogs.docs.length);
+              currentOperationLogsCount = operationLogs.docs.length+1;
+              console.log("Updated OperationsLog length:"+currentOperationLogsCount);
+              let operationLogData = await this.getOperationLogData(userEmail,applicationId,(operationLogs.docs.length).toString());
+              // console.log("LAST OPERATION DATA: "+operationLogData);
+              let operationJSON = JSON.parse(operationLogData);
+              operationUpdateMap["prevHash"] = operationJSON["currentHash"];
+              operationUpdateMap["blockNonce"] = operationJSON["blockNonce"];
+              let timeStamp = this.getCurrentDate();
+              operationUpdateMap["timeStamp"] = timeStamp;
+              operationUpdateMap["operationId"] = currentOperationLogsCount;
+              let inputString = ""+operationJSON["blockNonce"]+","+operationJSON["currentHash"]+","+timeStamp+","+operationUpdateMap["operation"]+","+operationUpdateMap["from"]+","+operationUpdateMap["to"]
+              let currentHash = this.computeOperationHash(inputString);              
+              operationUpdateMap["currentHash"]= currentHash;
+              console.log(JSON.stringify(operationUpdateMap));
+              this.updateOperationLog(userEmail,applicationId,currentOperationLogsCount,operationUpdateMap);
+            }
+          ) 
+        });
+        
+        resolve(true);
+      });
+  } 
+  //                
+
+  async updateOperationLog(userEmail:string,applicationId:string,operationId:number,operationUpdateMap:any){
+    await this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).collection("operationLog").doc(operationId.toString()).set(operationUpdateMap).then(operationUpdated=>{
+      console.log("Updated Operation Log Data")
+    });
+  }
+
+  async getOperationLogData(userEmail:string,applicationID:string,lastOperationId:string):Promise<string>{
+    return new Promise((resolve) => {
+      const operationDocData = this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationID).collection("operationLog").doc(lastOperationId).get();
+        operationDocData.subscribe(docData=>{
+          resolve(JSON.stringify(docData.data()));
+        })
+    });
+  }
 
   async getApplicationData(userEmail:string,applicationID:string):Promise<string>{
     return new Promise((resolve) => {
