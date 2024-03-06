@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./state-home-page.component.css']
 })
 export class StateHomePageComponent {
+  productsChainList = ["sadad","sadad","sadad","sadad","sadad","sadad","sadad","sadad","sadad","sadad","sadad","sadad","sadad",];
 
+  updateProductDetails(){
+    
+  }
 }

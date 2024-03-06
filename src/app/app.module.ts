@@ -11,6 +11,10 @@ import { FirebaseConfigService } from './services/firebase-config.service';
 import { AdminHomePageComponent } from './pages/admin-home-page/admin-home-page.component';
 import { SchemeFormComponent } from './components/scheme-form/scheme-form.component';
 import { SchemeListComponent } from './components/scheme-list/scheme-list.component';
+import { StateHomePageComponent } from './pages/state-home-page/state-home-page.component';
+import { DistrictHomePageComponent } from './pages/district-home-page/district-home-page.component';
+import { BankHomePageComponent } from './pages/bank-home-page/bank-home-page.component';
+import { AdminApprovalPageComponent } from './pages/admin-approval-page/admin-approval-page.component';
 
 const config = {
   apiKey: "AIzaSyC4afmMRGFppgt6oh4YaHkvniPMHCIHugQ",
@@ -28,6 +32,10 @@ const config = {
     AdminHomePageComponent,
     SchemeFormComponent,
     SchemeListComponent,
+    StateHomePageComponent,
+    DistrictHomePageComponent,
+    BankHomePageComponent,
+    AdminApprovalPageComponent,
     
   ],
   imports: [

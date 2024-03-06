@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import {AngularFirestore, QuerySnapshot} from '@angular/fire/compat/firestore'
 import { Router } from '@angular/router';
 import * as sha256 from 'crypto-js/sha256';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { AdminApprovalModel } from '../model/AdminApprovalModel';
+import { GovernmentType } from '../enums/GovernmentType';
 
 @Injectable({
   providedIn: 'root'
@@ -81,6 +83,47 @@ export class FirebaseConfigService {
     this.firestore.collection("MasterChain").doc(nonceString).set(dataMap);
 
     
+  }
+
+  async getAllAdminapprovalRequests():Promise<AdminApprovalModel[]>{
+    return new Promise((resolve) => {
+    const userCollection = this.firestore.collection('Users');
+    const unsubscribe$ = new Subject<void>();
+    let adminApprovalList: AdminApprovalModel[] = [];
+    userCollection.valueChanges().pipe(
+      takeUntil(unsubscribe$)
+    ).subscribe(
+      users=>{
+        users.forEach(user=>{
+          var userEmail = JSON.parse(JSON.stringify(user))["email"];
+          // console.log("userEmail:"+userEmail)
+          this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").valueChanges().pipe(
+            takeUntil(unsubscribe$)
+          ).subscribe(applications=>{
+              applications.forEach(application=>{
+                let applicationData = JSON.parse(JSON.stringify(application));
+                let currentDesk = applicationData["currentAtDesk"];   
+                if(currentDesk.toString() == GovernmentType.ADMIN){
+                  console.log("userEmail :"+userEmail+"currentDesk: "+currentDesk);
+                  let adminApprovalObject = new AdminApprovalModel(applicationData["nonce"],userEmail,applicationData["userType"],applicationData["applicantType"],applicationData["schemeTitle"],applicationData["approvedByAdmin"],applicationData["applicationId"]);
+                  adminApprovalList.push(adminApprovalObject);
+                }
+              })
+          })
+          })
+        })
+        resolve(adminApprovalList);
+        })
+      }
+
+
+  async getApplicationData(userEmail:string,applicationID:string):Promise<string>{
+    return new Promise((resolve) => {
+      const applicationDocData = this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationID).get();
+        applicationDocData.subscribe(docData=>{
+          resolve(JSON.stringify(docData.data()));
+        })
+    });
   }
 
   getCircularReplacer = () => {
