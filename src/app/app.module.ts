@@ -15,6 +15,7 @@ import { StateHomePageComponent } from './pages/state-home-page/state-home-page.
 import { DistrictHomePageComponent } from './pages/district-home-page/district-home-page.component';
 import { BankHomePageComponent } from './pages/bank-home-page/bank-home-page.component';
 import { AdminApprovalPageComponent } from './pages/admin-approval-page/admin-approval-page.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 
 const config = {
   apiKey: "AIzaSyC4afmMRGFppgt6oh4YaHkvniPMHCIHugQ",
@@ -36,6 +37,7 @@ const config = {
     DistrictHomePageComponent,
     BankHomePageComponent,
     AdminApprovalPageComponent,
+    ConfirmationDialogComponent,
     
   ],
   imports: [
@@ -43,7 +45,8 @@ const config = {
     AppRoutingModule,
     AngularFireModule.initializeApp(config),
     FormsModule,
-    RouterModule
+    RouterModule,
+    
   ],
   providers: [
     FirebaseConfigService

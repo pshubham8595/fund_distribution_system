@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import {AngularFirestore, QuerySnapshot} from '@angular/fire/compat/firestore'
+import {AngularFireStorage} from '@angular/fire/compat/storage'
 import { Router } from '@angular/router';
 import * as sha256 from 'crypto-js/sha256';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { AdminApprovalModel } from '../model/AdminApprovalModel';
 import { GovernmentType } from '../enums/GovernmentType';
+import { StateApprovalModel } from '../model/StateApprovalModel';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,7 @@ import { GovernmentType } from '../enums/GovernmentType';
 export class FirebaseConfigService {
 
   constructor(
-    public firestore:AngularFirestore) { }
+    public firestore:AngularFirestore,private storage:AngularFireStorage) { }
 
   getCurrentDate(): string {
     const date = new Date();
@@ -122,7 +124,37 @@ export class FirebaseConfigService {
         })
       }
 
-
+  async getAllStateapprovalRequests():Promise<StateApprovalModel[]>{
+        return new Promise((resolve) => {
+        const userCollection = this.firestore.collection('Users');
+        const unsubscribe$ = new Subject<void>();
+        let approvalList: StateApprovalModel[] = [];
+        userCollection.valueChanges().pipe(
+          takeUntil(unsubscribe$)
+        ).subscribe(
+          users=>{
+            users.forEach(user=>{
+              var userEmail = JSON.parse(JSON.stringify(user))["email"];
+              // console.log("userEmail:"+userEmail)
+              this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").valueChanges().pipe(
+                takeUntil(unsubscribe$)
+              ).subscribe(applications=>{
+                  applications.forEach(application=>{
+                    let applicationData = JSON.parse(JSON.stringify(application));
+                    let currentDesk = applicationData["currentAtDesk"];   
+                    if(currentDesk.toString() == GovernmentType.STATE){
+                      console.log("userEmail :"+userEmail+"currentDesk: "+currentDesk);
+                      let adminApprovalObject = new StateApprovalModel(applicationData["nonce"],applicationData["applicationId"],applicationData["userEmail"],applicationData["schemeTitle"]);
+                      approvalList.push(adminApprovalObject);
+                    }
+                  })
+              })
+              })
+            })
+            resolve(approvalList);
+            })
+          }
+    
 
   async approveByAdmin(userEmail:string,applicationId:string,applicationUpdateMap:any,operationUpdateMap:any):Promise<boolean>{
       return new Promise(async (resolve)=>{
@@ -157,8 +189,20 @@ export class FirebaseConfigService {
         resolve(true);
       });
   } 
-  //                
+  
+  downloadFile(filePath: string): void {
+    const fileRef = this.storage.ref(filePath);
 
+    fileRef.getDownloadURL().subscribe(url => {
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filePath; 
+      anchor.target = "_blank"; // Open the download in new tab to avoid navigating from the current page
+      anchor.click();
+    });
+  }             
+
+  
   async updateOperationLog(userEmail:string,applicationId:string,operationId:number,operationUpdateMap:any){
     await this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).collection("operationLog").doc(operationId.toString()).set(operationUpdateMap).then(operationUpdated=>{
       console.log("Updated Operation Log Data")
@@ -173,6 +217,41 @@ export class FirebaseConfigService {
         })
     });
   }
+
+  async rejectByAdmin(userEmail:string,applicationId:string,applicationUpdateMap:any,operationUpdateMap:any):Promise<boolean>{
+    return new Promise(async (resolve)=>{
+      let currentOperationLogsCount = -1;
+      await this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).update(applicationUpdateMap).then(async val=>{
+        console.log("Updated Application Data");
+        const unsubscribe$ = new Subject<void>();
+        this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).collection("operationLog").get().pipe(
+          takeUntil(unsubscribe$)
+        ) .subscribe(
+          async operationLogs=>{
+            console.log("Current OperationsLog length:"+operationLogs.docs.length);
+            currentOperationLogsCount = operationLogs.docs.length+1;
+            console.log("Updated OperationsLog length:"+currentOperationLogsCount);
+            let operationLogData = await this.getOperationLogData(userEmail,applicationId,(operationLogs.docs.length).toString());
+            // console.log("LAST OPERATION DATA: "+operationLogData);
+            let operationJSON = JSON.parse(operationLogData);
+            operationUpdateMap["prevHash"] = operationJSON["currentHash"];
+            operationUpdateMap["blockNonce"] = operationJSON["blockNonce"];
+            let timeStamp = this.getCurrentDate();
+            operationUpdateMap["timeStamp"] = timeStamp;
+            operationUpdateMap["operationId"] = currentOperationLogsCount;
+            let inputString = ""+operationJSON["blockNonce"]+","+operationJSON["currentHash"]+","+timeStamp+","+operationUpdateMap["operation"]+","+operationUpdateMap["from"]+","+operationUpdateMap["to"]
+            let currentHash = this.computeOperationHash(inputString);              
+            operationUpdateMap["currentHash"]= currentHash;
+            console.log(JSON.stringify(operationUpdateMap));
+            this.updateOperationLog(userEmail,applicationId,currentOperationLogsCount,operationUpdateMap);
+          }
+        ) 
+      });
+      
+      resolve(true);
+    });
+} 
+
 
   async getApplicationData(userEmail:string,applicationID:string):Promise<string>{
     return new Promise((resolve) => {

@@ -2421,6 +2421,18 @@
     border-color: #6c757d;
   }
   
+  .btn-secondary-approve {
+    color: #fff;
+    background-color: #1c65a5;
+    border-color: #046bc5;
+  }
+  
+  .btn-secondary-reject {
+    color: #fff;
+    background-color: #794c11;
+    border-color: #681800;
+  }
+  
   .btn-secondary:hover {
     color: #fff;
     background-color: #5a6268;
@@ -9011,6 +9023,43 @@
     /* Darker gray background color on hover */
 }
 
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+  z-index: 9999; /* Ensure it's above other elements */
+}
+
+.loader-wrapper {
+  padding: 20px; /* Add padding around the loader */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+.loader {
+  border: 6px solid #f3f3f3; /* Light grey */
+  border-top: 6px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px; 
+  animation: spin 1s linear infinite; /* Spin animation */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
   @media print {
     *,

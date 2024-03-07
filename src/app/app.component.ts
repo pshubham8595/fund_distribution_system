@@ -16,7 +16,7 @@ export class AppComponent {
   name: string = "";
 
   constructor(private route: ActivatedRoute,private router: Router,public firebaseConfigService:FirebaseConfigService){
-    this.router.navigate(['/adminApprovalPage'], { relativeTo: this.route });
+    this.router.navigate(['/stateHomePage'], { relativeTo: this.route });
 
   }
 

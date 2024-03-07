@@ -10,40 +10,38 @@
       <h1>Fund Distribution System</h1>
     </div>
     <nav>
-      <ul class="nav-links">
-        <li><a href="#"  class="inactive">Approve Applicant</a></li>
-        <li><a href="#" class="active">Add Scheme</a></li>
-        <li><a [routerLink]="['/loginPage']">Logout</a></li>
-      </ul>
-    </nav>
+        <ul class="nav-links">
+          <li><a class="active" [routerLink]="['/adminApprovalPage']">Approve Applicant</a></li>
+          <li><a [routerLink]="['/adminHomePage']">Add Scheme</a></li>
+          <li><a [routerLink]="['/loginPage']">Logout</a></li>
+        </ul>
+      </nav>
   </header>
 
-  <div class="container">
-<!-- <div class="container"> -->
+  <div class="container" *ngIf="!isLoading">
     <table class="table table-hover top-margin">
         <thead>
           <th>#</th>
-          <th>Nonce</th>
-          <th>Prev Hash</th>
-          <th>Product Title</th>
-          <th>Product ID</th>
-          <th>QR String</th>
-          <th>Hash</th>
-          <th>Scan Count</th>
+          <th>ApplicationId</th>
+          <th>SchemeNonce</th>
+          <th>UserEmail</th>
+          <th>SchemeTitle</th>
+          <th>DownloadFiles</th>
+          <th>ApproveOperation</th>
+          <th>RejectOperation</th>
           
           <th></th>
         </thead>
         <tbody>
-          <tr *ngFor="let block of productsChainList;let i = index"> 
-              <th >{{i}}</th>
-              <td>block.nonce</td>
-              <td class="editable" contenteditable="true" >block.prevHash.substring(0,7)</td>
-              <td>block.productTitle</td>
-              <td>block.productId</td>
-              <td>block.qrString</td>
-              <td>block.hash.substring(0,7)</td>
-              <td>block.scanCount</td>
-              <td><button type="submit" (click)="updateProductDetails()" class="btn btn-secondary"> Update </button></td>
+          <tr *ngFor="let entry of approvalList;let i = index"> 
+              <th >{{i+1}}</th>
+              <td>{{entry.applicationId}}</td>
+              <td>{{entry.schemeNonce}}</td>
+              <td >{{entry.userEmail}}</td>
+              <td>{{entry.schemeTitle}}</td>
+              <td><a href="javascript:void(0)" (click)="downloadFiles(entry.userEmail,entry.applicationId)">Download Files</a></td>
+              <td><button type="submit" (click)="approveApplication(entry.userEmail,entry.applicationId)" class="btn btn-secondary-approve"> Approve </button></td>
+              <td><button type="submit" (click)="rejectApplication(entry.userEmail,entry.applicationId)" class="btn btn-secondary-reject"> Reject </button></td>
             </tr>
   
       </tbody>
@@ -62,17 +60,13 @@
           </tr>
         </tbody> -->
       </table>
-      <!-- <div class="row">
-        <button type="submit" (click)="sendNotification()" class="btn btn-primary">Send Notifications</button>
-        <hr>
-        <button type="submit" (click)="finalizingWork()" class="btn btn-primary">Finalize work</button>
-      </div> -->
-      <!-- <br><br> -->
-    <!-- </div> -->
+  </div>
+  <div class="loader-container" *ngIf="isLoading">
+    <div class="loader-wrapper">
+      <div class="loader"></div>
+      <div>Loading</div>
+    </div>
   </div>
 
 </body>
 </html>
-
-
-
