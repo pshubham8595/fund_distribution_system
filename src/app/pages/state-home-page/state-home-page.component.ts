@@ -3,6 +3,10 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 import axios from 'axios';
 import * as JSZip from 'jszip';
 import { Observable, switchMap } from 'rxjs';
+import { GovernmentType } from 'src/app/enums/GovernmentType';
+import { OperationLog } from 'src/app/enums/OperationEnum';
+import { RejectRemark } from 'src/app/enums/RejectioRemark';
+import { RejectionDesk } from 'src/app/enums/RejectionDesk';
 import { DownloadFileModel } from 'src/app/model/DownloadFileModel';
 import { StateApprovalModel } from 'src/app/model/StateApprovalModel';
 import { FirebaseConfigService } from 'src/app/services/firebase-config.service';
@@ -173,12 +177,49 @@ async populateUrls(downloadFilesList:DownloadFileModel[]):Promise<any>{
 //   );
 // }
 
-  approveApplication(userEmai:string,applicationId:string){
+async approveApplication(userEmai:string,applicationId:string){
+  let applicationUpdateDataMap = {
+    "approvedByState":true,
+    "currentAtDesk":GovernmentType.DISTRICT,
+  };
 
-  }
+  let operationUpdateMap = {
+    "from":GovernmentType.STATE,
+    "to":GovernmentType.DISTRICT,
+    "operation":OperationLog.APPROVED_BY_STATE,
+  };
 
-  rejectApplication(userEmai:string,applicationId:string){
+   await this.firebaseConfigService.approveApplication(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
+    this.approvalList = [];
+    await this.getAllStateApprovalList();
+    window.alert("Application Approved!");
+  
+   }); 
+}
 
-  }
+async rejectApplication(userEmai:string,applicationId:string){
+  let applicationUpdateDataMap = {
+    "approvedByState":false,
+    "currentAtDesk":RejectionDesk.REJECTION_DESK,
+    "rejectedBy":GovernmentType.STATE,
+    "rejectionRemark":RejectRemark.SUBMITTED_DOCUMENTS_INVALID,
+    "rejectionStatus":true
+  };
+
+  let operationUpdateMap = {
+    "from":GovernmentType.ADMIN,
+    "to":RejectionDesk.REJECTION_DESK,
+    "operation":RejectRemark.SUBMITTED_DOCUMENTS_INVALID,
+  };
+
+  
+  await this.firebaseConfigService.rejectApplication(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
+    this.approvalList = [];
+    await this.getAllStateApprovalList();
+    window.alert("Application Rejected!");
+  });
+
+  
+}
 
 }

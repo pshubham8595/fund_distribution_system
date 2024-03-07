@@ -12,7 +12,6 @@
     <nav>
         <ul class="nav-links">
           <li><a class="active" [routerLink]="['/adminApprovalPage']">Approve Applicant</a></li>
-          <li><a [routerLink]="['/adminHomePage']">Add Scheme</a></li>
           <li><a [routerLink]="['/loginPage']">Logout</a></li>
         </ul>
       </nav>
@@ -45,21 +44,7 @@
             </tr>
   
       </tbody>
-  
-        <!-- <tbody>
-          <tr *ngFor="let gr of list; let i = index"  [attr.data-index]="i">
-            <ng-container *ngIf="bidType !='finalBid'">
-            <td >gr</td>
-            <td >nfdafAUCNinv9EGUJVNJAW09GEg9e</td>
-            <td >SURENDRASHEWARG@GMAil.com</td>
-            <td >1,00,00,00,00,00,000</td>
-            <td >20-11-2023 12.00.00</td>
-            <td >nfdafAUCNinv9EGUJVNJAW09GEg9e)</td>
-            <td >Student</td>
-          </ng-container>
-          </tr>
-        </tbody> -->
-      </table>
+    </table>
   </div>
   <div class="loader-container" *ngIf="isLoading">
     <div class="loader-wrapper">

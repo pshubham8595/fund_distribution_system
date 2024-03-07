@@ -52,7 +52,7 @@ export class AdminApprovalPageComponent {
       "operation":OperationLog.APPROVED_BY_ADMIN,
     };
 
-     await this.firebaseConfigService.approveByAdmin(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
+     await this.firebaseConfigService.approveApplication(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
       this.adminApprovalList = [];
       await this.getAllAdminApprovalList();
       window.alert("Application Approved!");
@@ -76,7 +76,7 @@ export class AdminApprovalPageComponent {
     };
 
     
-    await this.firebaseConfigService.rejectByAdmin(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
+    await this.firebaseConfigService.rejectApplication(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
       this.adminApprovalList = [];
       await this.getAllAdminApprovalList();
       window.alert("Application Rejected!");
