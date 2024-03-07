@@ -14,7 +14,7 @@ import { StateApprovalModel } from '../model/StateApprovalModel';
 export class FirebaseConfigService {
 
   constructor(
-    public firestore:AngularFirestore,private storage:AngularFireStorage) { }
+    public firestore:AngularFirestore,public storage:AngularFireStorage) { }
 
   getCurrentDate(): string {
     const date = new Date();
@@ -300,22 +300,35 @@ async rejectByState(userEmail:string,applicationId:string,applicationUpdateMap:a
     });
   }
 
-  async getApplicationDocuments(userEmail:string,applicationID:string):Promise<any>{
-    return new Promise((resolve) => {
-      const submittedDocuments = this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationID).collection("docs").get();
-      const unsubscribe$ = new Subject<void>();
-      submittedDocuments.pipe(
-        takeUntil(unsubscribe$)
-      ).subscribe(documentsCollection=>{
-        documentsCollection.forEach(doc=>{
-          console.log("Document: "+doc.id)
-          console.log("filePath:"+JSON.stringify(doc.data()))  
+  async getApplicationDocuments(userEmail:string,applicationID:string):Promise<any[]>{
+    return new Promise(async (resolve) => {
+    try{
+    const unsubscribe$ = new Subject<void>();
+    let documentUrlist:{ [key: string]: any }[] = [];
+    let documentUrlMap: { [key: string]: any } = {};
+
+    await this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationID.toString()).collection("docs").get().pipe(
+          takeUntil(unsubscribe$)
+      ).subscribe(documentsObj=>{
+        documentsObj.forEach(document=>{
+          let documentType:string = document.id.toString();
+          documentUrlMap = {};
+          documentUrlMap[documentType] = JSON.parse(JSON.stringify(document.data()))["filePath"]; 
+          console.log("UpdateMap:"+JSON.stringify(documentUrlMap));
+          documentUrlist.push(documentUrlMap);
         })
-        
-        resolve(true);
-      })
+        resolve(documentUrlist);
+      });
+      
+    }
+      catch (error) {
+        // Code to handle the error
+        console.error("An error occurred:", error);
+        resolve([]);
+      }
     });
-  }
+    }
+  
 
 
   getCircularReplacer = () => {
