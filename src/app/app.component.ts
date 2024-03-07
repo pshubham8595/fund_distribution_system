@@ -16,7 +16,7 @@ export class AppComponent {
   name: string = "";
 
   constructor(private route: ActivatedRoute,private router: Router,public firebaseConfigService:FirebaseConfigService){
-    this.router.navigate(['/bankHomePage'], { relativeTo: this.route });
+    this.router.navigate(['/loginPage'], { relativeTo: this.route });
 
   }
 
