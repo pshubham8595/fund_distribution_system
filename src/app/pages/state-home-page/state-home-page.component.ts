@@ -35,9 +35,13 @@ export class StateHomePageComponent {
     }
   }
 
-  downloadFiles(userEmai:string,applicationId:string){
-    console.log("Downloading Files for UE: "+userEmai+", ApplicationId: "+applicationId);
-    this.firebaseConfigService.downloadFile("applicationDocs/aaa@gmail.com/1/adharCard.pdf");
+  async downloadFiles(userEmail:string,applicationId:string){
+    console.log("Downloading Files for UE: "+userEmail+", ApplicationId: "+applicationId);
+    let downloadFilesList = [];
+    await this.firebaseConfigService.getApplicationDocuments(userEmail,applicationId);
+    
+    
+    
   }
 
   approveApplication(userEmai:string,applicationId:string){
