@@ -76,36 +76,36 @@ export class StateHomePageComponent {
 }
 
 
-  async downloadFilesAsZip(filePaths: string[]): Promise<void> {
-    const zip = new JSZip();
+//   async downloadFilesAsZip(filePaths: string[]): Promise<void> {
+//     const zip = new JSZip();
 
-    try {
-        const promises = filePaths.map(async (path, index) => {
-            const fileRef = this.firebaseConfigService.storage.ref(path);
-            console.log("Ref:"+fileRef.getDownloadURL());
-            fileRef.getDownloadURL().subscribe(async (url:string)=>{
-              console.log("DOWNLOAD URL:"+url);
-              const fileBlob = await this.fetchFileAsBlobOld(url);
-              if (fileBlob) {
-                  zip.file(`file${index + 1}.pdf`, fileBlob);
-              }
-            });
-        });
+//     try {
+//         const promises = filePaths.map(async (path, index) => {
+//             const fileRef = this.firebaseConfigService.storage.ref(path);
+//             console.log("Ref:"+fileRef.getDownloadURL());
+//             fileRef.getDownloadURL().subscribe(async (url:string)=>{
+//               console.log("DOWNLOAD URL:"+url);
+//               const fileBlob = await this.fetchFileAsBlobOld(url);
+//               if (fileBlob) {
+//                   zip.file(`file${index + 1}.pdf`, fileBlob);
+//               }
+//             });
+//         });
 
-        await Promise.all(promises);
+//         await Promise.all(promises);
 
-        const zipContent = await zip.generateAsync({ type: 'blob' });
-        const blobUrl = URL.createObjectURL(zipContent);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = 'files.zip';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } catch (error) {
-        console.error('Error downloading files as zip:', error);
-    }
-}
+//         const zipContent = await zip.generateAsync({ type: 'blob' });
+//         const blobUrl = URL.createObjectURL(zipContent);
+//         const link = document.createElement('a');
+//         link.href = blobUrl;
+//         link.download = 'files.zip';
+//         document.body.appendChild(link);
+//         link.click();
+//         document.body.removeChild(link);
+//     } catch (error) {
+//         console.error('Error downloading files as zip:', error);
+//     }
+// }
 
 async populateUrls(downloadFilesList:DownloadFileModel[]):Promise<any>{
   let downloadUrlsList:string[] = [];
@@ -121,57 +121,57 @@ async populateUrls(downloadFilesList:DownloadFileModel[]):Promise<any>{
   })
 }
 
-async downloadFilesAsZipNew(filePaths: string[]): Promise<void> {
-  const zip = new JSZip();
+// async downloadFilesAsZipNew(filePaths: string[]): Promise<void> {
+//   const zip = new JSZip();
    
-  try {
-      const promises = filePaths.map(async (url, index) => {
-          try {
-              const response = await axios.get(url, { responseType: 'arraybuffer' });
-              if (!response.data || !response.data.byteLength) {
-                  console.error(`Empty response for file ${index + 1}. Skipping.`);
-                  return;
-              }
-              zip.file(`file${index + 1}.pdf`, response.data);
-          } catch (error) {
-              console.error(`Error downloading file ${index + 1}:`, error);
-          }
-      });
+//   try {
+//       const promises = filePaths.map(async (url, index) => {
+//           try {
+//               const response = await axios.get(url, { responseType: 'arraybuffer' });
+//               if (!response.data || !response.data.byteLength) {
+//                   console.error(`Empty response for file ${index + 1}. Skipping.`);
+//                   return;
+//               }
+//               zip.file(`file${index + 1}.pdf`, response.data);
+//           } catch (error) {
+//               console.error(`Error downloading file ${index + 1}:`, error);
+//           }
+//       });
 
-      await Promise.all(promises);
+//       await Promise.all(promises);
 
-      const zipContent = await zip.generateAsync({ type: 'blob' });
-      const blobUrl = URL.createObjectURL(zipContent);
-      const link = document.createElement('a');
-      link.href = blobUrl;
-      link.download = 'files.zip';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-  } catch (error) {
-      console.error('Error downloading files as zip:', error);
-  }
-}
+//       const zipContent = await zip.generateAsync({ type: 'blob' });
+//       const blobUrl = URL.createObjectURL(zipContent);
+//       const link = document.createElement('a');
+//       link.href = blobUrl;
+//       link.download = 'files.zip';
+//       document.body.appendChild(link);
+//       link.click();
+//       document.body.removeChild(link);
+//   } catch (error) {
+//       console.error('Error downloading files as zip:', error);
+//   }
+// }
 
-async fetchFileAsBlobOld(downloadUrl: string): Promise<Blob> {
-  try {
-      const response = await fetch(downloadUrl);
-      if (!response.ok) {
-          throw new Error(`Failed to fetch file from ${downloadUrl}: ${response.statusText}`);
-      }
-      return await response.blob();
-  } catch (error) {
-      console.error('Error fetching file as blob:', error);
-      throw error;
-  }
-}
+// async fetchFileAsBlobOld(downloadUrl: string): Promise<Blob> {
+//   try {
+//       const response = await fetch(downloadUrl);
+//       if (!response.ok) {
+//           throw new Error(`Failed to fetch file from ${downloadUrl}: ${response.statusText}`);
+//       }
+//       return await response.blob();
+//   } catch (error) {
+//       console.error('Error fetching file as blob:', error);
+//       throw error;
+//   }
+// }
 
-fetchFileAsBlob(storage: AngularFireStorage, downloadUrl: string): Observable<Blob> {
-  return storage.refFromURL(downloadUrl).getDownloadURL().pipe(
-      switchMap(url => fetch(url)),
-      switchMap(response => response.blob())
-  );
-}
+// fetchFileAsBlob(storage: AngularFireStorage, downloadUrl: string): Observable<Blob> {
+//   return storage.refFromURL(downloadUrl).getDownloadURL().pipe(
+//       switchMap(url => fetch(url)),
+//       switchMap(response => response.blob())
+//   );
+// }
 
   approveApplication(userEmai:string,applicationId:string){
 
