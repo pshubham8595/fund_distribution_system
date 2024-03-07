@@ -2,5 +2,6 @@ export enum GovernmentType {
     ADMIN = "admin",
     STATE = "state",
     DISTRICT = "district",
-    BANK = "bank"
+    BANK = "bank",
+    ARCHIVE = "archive"
 }

@@ -9061,6 +9061,10 @@
   100% { transform: rotate(360deg); }
 }
 
+.padded {
+    padding-top: 10px; /* Adjust as needed */
+    padding-bottom: 10px; /* Adjust as needed */
+  }
   @media print {
     *,
     *::before,

@@ -8,6 +8,7 @@
   import { GovernmentType } from '../enums/GovernmentType';
   import { StateApprovalModel } from '../model/StateApprovalModel';
 import { DistricDataModel } from '../model/DistrictDataModel';
+import { BankDataModel } from '../model/BankDataModel';
 
   @Injectable({
     providedIn: 'root'
@@ -186,7 +187,38 @@ import { DistricDataModel } from '../model/DistrictDataModel';
                   resolve(approvalList);
                   })
         }
-    
+
+    async getAllBankApprovalRequests():Promise<BankDataModel[]>{
+          return new Promise((resolve) => {
+          const userCollection = this.firestore.collection('Users');
+          const unsubscribe$ = new Subject<void>();
+          let approvalList: BankDataModel[] = [];
+          userCollection.valueChanges().pipe(
+            takeUntil(unsubscribe$)
+          ).subscribe(
+            users=>{
+              users.forEach(user=>{
+                var userEmail = JSON.parse(JSON.stringify(user))["email"];
+                // console.log("userEmail:"+userEmail)
+                this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").valueChanges().pipe(
+                  takeUntil(unsubscribe$)
+                ).subscribe(applications=>{
+                    applications.forEach(application=>{
+                      let applicationData = JSON.parse(JSON.stringify(application));
+                      let currentDesk = applicationData["currentAtDesk"];   
+                      if(currentDesk.toString() == GovernmentType.BANK){
+                        console.log("userEmail :"+userEmail+"currentDesk: "+currentDesk);
+                        let bankApprovalObject = new BankDataModel(applicationData["schemeTitle"],applicationData["schemeFund"],applicationData["finalAmount"],applicationData["applicationId"],applicationData["nonce"],applicationData["userEmail"]);
+                        approvalList.push(bankApprovalObject);
+                      }
+                    })
+                })
+                })
+              })
+              resolve(approvalList);
+              })
+    }
+
     async approveApplication(userEmail:string,applicationId:string,applicationUpdateMap:any,operationUpdateMap:any):Promise<boolean>{
         return new Promise(async (resolve)=>{
           let currentOperationLogsCount = -1;

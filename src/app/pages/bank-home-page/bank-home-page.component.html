@@ -1,1 +1,61 @@
-<p>bank-home-page works!</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Navbar Example</title>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <h1>Fund Distribution System</h1>
+    </div>
+    <nav>
+        <ul class="nav-links">
+          <li><a class="active" [routerLink]="['/adminApprovalPage']">Approve Applicant</a></li>
+          <li><a [routerLink]="['/loginPage']">Logout</a></li>
+        </ul>
+      </nav>
+  </header>
+
+  <div class="container" *ngIf="!isLoading">
+    <div class="padded"><h2>Bank Home</h2></div>
+    
+    <table class="table table-hover top-margin">
+        <thead>
+          <th>#</th>
+          <th>ApplicationId</th>
+          <th>SchemeNonce</th>
+          <th>UserEmail</th>
+          <th>SchemeTitle</th>
+          <th>Scheme Fund</th>
+          <th>Approved Fund</th>
+          <th>ApproveOperation</th>
+          <th>RejectOperation</th>
+          
+          <th></th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let entry of approvalList;let i = index"> 
+              <th >{{i+1}}</th>
+              <td>{{entry.applicationId}}</td>
+              <td>{{entry.schemeNonce}}</td>
+              <td >{{entry.userEmail}}</td>
+              <td>{{entry.schemeTitle}}</td>
+              <td>{{entry.schemeFund}}</td>
+              <td>{{entry.approvedFund}}</td>
+              <td><button type="submit" (click)="approveApplication(entry.userEmail,entry.applicationId)" class="btn btn-secondary-approve"> Approve </button></td>
+              <td><button type="submit" (click)="rejectApplication(entry.userEmail,entry.applicationId)" class="btn btn-secondary-reject"> Reject </button></td>
+            </tr>
+  
+      </tbody>
+    </table>
+  </div>
+  <div class="loader-container" *ngIf="isLoading">
+    <div class="loader-wrapper">
+      <div class="loader"></div>
+      <div>Loading</div>
+    </div>
+  </div>
+
+</body>
+</html>
