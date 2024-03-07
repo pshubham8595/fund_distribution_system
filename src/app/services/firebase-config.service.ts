@@ -7,6 +7,7 @@
   import { AdminApprovalModel } from '../model/AdminApprovalModel';
   import { GovernmentType } from '../enums/GovernmentType';
   import { StateApprovalModel } from '../model/StateApprovalModel';
+import { DistricDataModel } from '../model/DistrictDataModel';
 
   @Injectable({
     providedIn: 'root'
@@ -153,12 +154,43 @@
               })
               resolve(approvalList);
               })
-            }
+        }
       
-
+    async getAllDistrictApprovalRequests():Promise<DistricDataModel[]>{
+              return new Promise((resolve) => {
+              const userCollection = this.firestore.collection('Users');
+              const unsubscribe$ = new Subject<void>();
+              let approvalList: DistricDataModel[] = [];
+              userCollection.valueChanges().pipe(
+                takeUntil(unsubscribe$)
+              ).subscribe(
+                users=>{
+                  users.forEach(user=>{
+                    var userEmail = JSON.parse(JSON.stringify(user))["email"];
+                    // console.log("userEmail:"+userEmail)
+                    this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").valueChanges().pipe(
+                      takeUntil(unsubscribe$)
+                    ).subscribe(applications=>{
+                        applications.forEach(application=>{
+                          let applicationData = JSON.parse(JSON.stringify(application));
+                          let currentDesk = applicationData["currentAtDesk"];   
+                          if(currentDesk.toString() == GovernmentType.DISTRICT){
+                            console.log("userEmail :"+userEmail+"currentDesk: "+currentDesk);
+                            let districtApprovalObject = new DistricDataModel(applicationData["schemeTitle"],applicationData["schemeFund"],applicationData["finalAmount"],applicationData["applicationId"],applicationData["nonce"],applicationData["userEmail"]);
+                            approvalList.push(districtApprovalObject);
+                          }
+                        })
+                    })
+                    })
+                  })
+                  resolve(approvalList);
+                  })
+        }
+    
     async approveApplication(userEmail:string,applicationId:string,applicationUpdateMap:any,operationUpdateMap:any):Promise<boolean>{
         return new Promise(async (resolve)=>{
           let currentOperationLogsCount = -1;
+          console.log("Application Data Map:"+JSON.stringify(applicationUpdateMap));
           await this.firestore.collection('Users').doc(userEmail.toString()).collection("applications").doc(applicationId.toString()).update(applicationUpdateMap).then(async val=>{
             console.log("Updated Application Data");
             const unsubscribe$ = new Subject<void>();

@@ -207,11 +207,10 @@ async rejectApplication(userEmai:string,applicationId:string){
   };
 
   let operationUpdateMap = {
-    "from":GovernmentType.ADMIN,
+    "from":GovernmentType.STATE,
     "to":RejectionDesk.REJECTION_DESK,
     "operation":RejectRemark.SUBMITTED_DOCUMENTS_INVALID,
   };
-
   
   await this.firebaseConfigService.rejectApplication(userEmai,applicationId,applicationUpdateDataMap,operationUpdateMap).then(async val=>{
     this.approvalList = [];
